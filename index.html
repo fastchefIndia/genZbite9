@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>genZbite — Fresh Food Home Style</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#f8faf9;color:#0f1715;font-family:Inter,system-ui,-apple-system,sans-serif}
+button{font:inherit;cursor:pointer}
+.hide{display:none!important}
+.page{min-height:100vh}
+
+/* HEADER TOPBAR */
+.topbar{height:80px;background:#fff;border-bottom:1px solid #eef2f0;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:44px;height:44px;border-radius:50%;background:#000;display:grid;place-items:center;color:#fff;font-weight:900;font-size:20px}
+.brandtext{font-size:22px;font-weight:800;letter-spacing:-1px}
+.brandtext b{color:#08745d}
+.tagline{font-size:10px;color:#667370;display:block}
+.navlinks{display:flex;gap:24px}
+.navlinks button{border:0;background:transparent;font-weight:600;font-size:14px;color:#33413e;padding:8px 0}
+.navlinks button.active{color:#08745d;border-bottom:2px solid #08745d}
+.auth-btn{border:0;border-radius:20px;background:#075f4e;color:#fff;padding:10px 20px;font-weight:700;font-size:13px}
+
+/* HERO & FILTERS */
+.hero{padding:25px 5% 15px}
+.hero h2{font-size:15px;color:#5c6865;font-weight:500;margin:0 0 15px}
+.filter-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px}
+.filter-chip{border:1px solid #e2e8e5;background:#fff;border-radius:20px;padding:8px 18px;font-size:12px;font-weight:700;color:#33413e;white-space:nowrap}
+.filter-chip.active{background:#075f4e;color:#fff;border-color:#075f4e}
+
+/* CHEF GRID (DESKTOP: 4 CARDS PER ROW, MOBILE: 1 CARD) */
+.chef-container{padding:10px 5% 60px}
+.chefgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+@media(max-width:1024px){.chefgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:640px){.chefgrid{grid-template-columns:1fr;}}
+
+.chefcard{background:#fff;border-radius:16px;border:1px solid #eaeeec;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.03)}
+.chefphoto{height:190px;position:relative;background:#eee}
+.chefphoto img{width:100%;height:100%;object-fit:cover}
+.badge-avail{position:absolute;top:12px;left:12px;background:#079260;color:#fff;font-size:11px;font-weight:800;padding:5px 10px;border-radius:12px}
+.distance-tag{position:absolute;bottom:10px;right:12px;color:#fff;font-size:11px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,0.8)}
+.chefbody{padding:16px}
+.chefname{font-size:17px;font-weight:800;margin:0 0 4px}
+.chefrating{font-size:12px;color:#606c69;margin-bottom:10px}
+.tags{display:flex;gap:10px;font-size:11px;color:#075f4e;font-weight:700;margin-bottom:8px}
+.cuisine{font-size:11px;color:#606c69;margin-bottom:14px}
+.bookbtn{width:100%;background:#075f4e;color:#fff;border:0;border-radius:8px;padding:10px;font-weight:800;font-size:13px}
+
+/* INNER FLOW CONTAINER */
+.flow{max-width:850px;margin:30px auto;padding:0 20px 80px}
+.back-btn{border:0;background:transparent;color:#52605d;font-weight:700;font-size:13px;padding:0;margin-bottom:20px}
+.flow h1{font-size:32px;letter-spacing:-1px;margin:0 0 8px}
+.subtext{color:#62706d;font-size:14px;margin:0 0 25px}
+.section-label{font-size:11px;font-weight:800;color:#6b7875;letter-spacing:0.5px;margin:20px 0 10px;text-transform:uppercase}
+
+/* SELECTION CARDS & GRID */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.opt-card{background:#fff;border:1px solid #e1e7e4;border-radius:12px;padding:18px;cursor:pointer;transition:0.15s}
+.opt-card:hover,.opt-card.selected{border-color:#075f4e;background:#f2f9f6}
+.opt-card strong{display:block;font-size:16px;margin-bottom:4px}
+.opt-card span{font-size:11px;color:#687673}
+
+/* MENU TABS & LIST */
+.tab-row{display:flex;gap:10px;margin-bottom:20px}
+.tab-btn{border:1px solid #e1e7e4;background:#fff;padding:8px 20px;border-radius:20px;font-size:12px;font-weight:700}
+.tab-btn.active{background:#075f4e;color:#fff;border-color:#075f4e}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+.menu-item{background:#fff;border:1px solid #e1e7e4;border-radius:12px;padding:16px;display:flex;justify-content:space-between;align-items:center}
+.item-title{font-weight:800;font-size:15px}
+.item-sub{font-size:11px;color:#6a7774;margin-top:2px}
+.toggle-group{display:flex;gap:4px;margin-top:8px}
+.tgl-btn{border:1px solid #c8d3ce;background:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px}
+.tgl-btn.active{background:#075f4e;color:#fff;border-color:#075f4e}
+.action-btn{background:#075f4e;color:#fff;border:0;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:800}
+
+/* REVIEW & BOOK SUMMARY */
+.review-grid{display:grid;grid-template-columns:1.2fr 0.8fr;gap:20px}
+@media(max-width:768px){.review-grid{grid-template-columns:1fr}}
+.panel-box{background:#fff;border:1px solid #e1e7e4;border-radius:16px;padding:20px}
+.row-line{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f4f2;font-size:13px}
+
+/* THANK YOU & TRACKING */
+.thank-box{text-align:center;padding:60px 20px}
+.check-icon{width:60px;height:60px;background:#e8f7f2;color:#075f4e;border-radius:50%;display:grid;place-items:center;font-size:30px;margin:0 auto 20px}
+.map-box{height:320px;background:#e5ebe8;border-radius:16px;position:relative;overflow:hidden;margin-top:20px}
+.map-line{position:absolute;top:50%;left:20%;width:60%;height:4px;background:#075f4e;transform:rotate(-15deg)}
+
+/* INTRO SPLASH OVERLAY */
+#intro{position:fixed;inset:0;background:#000;color:#fff;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.intro-step{position:absolute;text-align:center;display:flex;flex-direction:column;align-items:center}
+
+/* STEP 1: NAMASTE */
+#stepNamaste{animation:fadeInOut 2s forwards}
+.namaste-text{font-size:42px;font-weight:800;margin-top:10px}
+
+/* STEP 2: ORBITING ICONS */
+#stepOrbit{opacity:0;animation:fadeInOut 2.5s 2s forwards;position:relative;width:260px;height:260px;display:flex;align-items:center;justify-content:center}
+.center-logo-img{width:110px;height:110px;border-radius:50%;object-fit:cover;z-index:2}
+.orbit-item{position:absolute;font-size:24px;animation:rotateOrbit 3s linear infinite}
+.item1{top:10px} .item2{right:10px} .item3{bottom:10px} .item4{left:10px} .item5{top:30px;right:30px}
+
+/* STEP 3: CURSIVE Z DRAWING 3 TIMES */
+#stepZ{opacity:0;animation:fadeInStep 0.2s 4.5s forwards}
+.z-svg{width:180px;height:180px}
+.z-path{fill:none;stroke:#fff;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1000;stroke-dashoffset:1000;animation:drawZLoop 1s 4.6s 3 ease-in-out forwards}
+
+@keyframes fadeInOut{0%{opacity:0;transform:scale(0.9)}20%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(0.9)}}
+@keyframes fadeInStep{to{opacity:1}}
+@keyframes rotateOrbit{from{transform:rotate(0deg) translate(85px) rotate(0deg)}to{transform:rotate(360deg) translate(85px) rotate(-360deg)}}
+@keyframes drawZLoop{0%{stroke-dashoffset:1000}100%{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+
+<!-- INTRO SPLASH SCREEN -->
+<div id="intro">
+  <!-- 1. Namaste with Lady Emoji -->
+  <div class="intro-step" id="stepNamaste">
+    <div style="font-size:60px;">🙏🏽🏼</div>
+    <div class="namaste-text">नमस्ते</div>
+  </div>
+
+  <!-- 2. Main Logo with Orbiting Food Icons -->
+  <div class="intro-step" id="stepOrbit">
+    <div class="brand-icon" style="width:90px;height:90px;font-size:36px;">gZ</div>
+    <span class="orbit-item item1">🔪</span>
+    <span class="orbit-item item2">🍴</span>
+    <span class="orbit-item item3">☕</span>
+    <span class="orbit-item item4">🍰</span>
+    <span class="orbit-item item5">🧁</span>
+  </div>
+
+  <!-- 3. Cursive Z Drawing (3 Loops) -->
+  <div class="intro-step" id="stepZ">
+    <svg class="z-svg" viewBox="0 0 371 269">
+      <path class="z-path" d="M8 102 C55 62 112 18 167 20 C186 21 183 43 163 63 C137 89 101 111 57 137 M55 174 C88 151 123 127 155 116 C177 109 192 116 190 132 C187 151 163 174 139 193 M92 162 C142 130 196 111 251 91 C292 76 330 61 369 52"/>
+    </svg>
+  </div>
+</div>
+
+<!-- TOP HEADER -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">gZ</div>
+    <div>
+      <div class="brandtext">gen<b>Z</b>bite</div>
+      <span class="tagline">Fresh Food · Home Style · Just for You</span>
+    </div>
+  </div>
+  <nav class="navlinks">
+    <button class="active" onclick="showPage('homePage')">Home</button>
+    <button onclick="showPage('homePage')">Chefs</button>
+    <button onclick="showPage('homePage')">Menu</button>
+  </nav>
+  <button class="auth-btn">Login / Sign Up</button>
+</header>
+
+<!-- PAGE 1: HOME PAGE -->
+<main id="homePage" class="page">
+  <div class="hero">
+    <h2>Discover and book verified home chefs near you. Fresh, hygienic and homemade meals, cooked with love.</h2>
+    <div class="filter-row">
+      <button class="filter-chip active">All Chefs</button>
+      <button class="filter-chip">Veg Only</button>
+      <button class="filter-chip">Jain Only</button>
+      <button class="filter-chip">Top Rated</button>
+    </div>
+  </div>
+
+  <div class="chef-container">
+    <div class="chefgrid">
+      <!-- Chef 1 -->
+      <div class="chefcard">
+        <div class="chefphoto">
+          <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=500&auto=format&fit=crop" alt="Chef">
+          <span class="badge-avail">Available Now</span>
+          <span class="distance-tag">📍 2.1 km (8 min)</span>
+        </div>
+        <div class="chefbody">
+          <div class="chefname">Chef Raj Sharma</div>
+          <div class="chefrating">★ 4.8 (124 reviews)</div>
+          <div class="tags"><span>🌿 Veg & Jain</span> <span>👨‍🍳 5+ yrs exp</span></div>
+          <div class="cuisine">North Indian | Home Style | Healthy</div>
+          <button class="bookbtn" onclick="startBooking('Chef Raj Sharma', '4.8', '2.1 km')">Book Chef</button>
+        </div>
+      </div>
+      <!-- Chef 2 -->
+      <div class="chefcard">
+        <div class="chefphoto">
+          <img src="https://images.unsplash.com/photo-1583394293214-28ded15ee548?w=500&auto=format&fit=crop" alt="Chef">
+          <span class="badge-avail">Available Now</span>
+          <span class="distance-tag">📍 3.4 km (12 min)</span>
+        </div>
+        <div class="chefbody">
+          <div class="chefname">Chef Priya Verma</div>
+          <div class="chefrating">★ 4.7 (96 reviews)</div>
+          <div class="tags"><span>🌿 Veg Only</span> <span>👨‍🍳 4+ yrs exp</span></div>
+          <div class="cuisine">North Indian | Italian | Continental</div>
+          <button class="bookbtn" onclick="startBooking('Chef Priya Verma', '4.7', '3.4 km')">Book Chef</button>
+        </div>
+      </div>
+      <!-- Chef 3 -->
+      <div class="chefcard">
+        <div class="chefphoto">
+          <img src="https://images.unsplash.com/photo-1607631568010-a87245c0daf8?w=500&auto=format&fit=crop" alt="Chef">
+          <span class="badge-avail">Available Now</span>
+          <span class="distance-tag">📍 4.2 km (15 min)</span>
+        </div>
+        <div class="chefbody">
+          <div class="chefname">Chef Aman Khan</div>
+          <div class="chefrating">★ 4.7 (87 reviews)</div>
+          <div class="tags"><span>🌿 Veg & Jain</span> <span>👨‍🍳 6+ yrs exp</span></div>
+          <div class="cuisine">Indian | Mughlai | Special Diet</div>
+          <button class="bookbtn" onclick="startBooking('Chef Aman Khan', '4.7', '4.2 km')">Book Chef</button>
+        </div>
+      </div>
+      <!-- Chef 4 -->
+      <div class="chefcard">
+        <div class="chefphoto">
+          <img src="https://images.unsplash.com/photo-1581299894007-aaa50297cf16?w=500&auto=format&fit=crop" alt="Chef">
+          <span class="badge-avail">Available Now</span>
+          <span class="distance-tag">📍 5.6 km (18 min)</span>
+        </div>
+        <div class="chefbody">
+          <div class="chefname">Chef Neha Singh</div>
+          <div class="chefrating">★ 4.9 (142 reviews)</div>
+          <div class="tags"><span>🌿 Veg Only</span> <span>👨‍🍳 5+ yrs exp</span></div>
+          <div class="cuisine">North Indian | South Indian | Fast Food</div>
+          <button class="bookbtn" onclick="startBooking('Chef Neha Singh', '4.9', '5.6 km')">Book Chef</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- PAGE 2: PREFERENCE & PEOPLE SELECTION -->
+<section id="step2Page" class="page hide flow">
+  <button class="back-btn" onclick="showPage('homePage')">← Back</button>
+  <h1>How many people would you like the chef to cook for?</h1>
+  <p class="subtext">First choose the food preference, then select the number of people.</p>
+
+  <div class="section-label">FOOD PREFERENCE</div>
+  <div class="card-grid">
+    <div class="opt-card selected" onclick="selectPref(this, 'Veg')">
+      <strong>🌿 Veg</strong>
+      <span>Vegetarian cooking</span>
+    </div>
+    <div class="opt-card" onclick="selectPref(this, 'Jain')">
+      <strong>🙏 Jain</strong>
+      <span>Jain-friendly cooking</span>
+    </div>
+  </div>
+
+  <div class="section-label">NUMBER OF PEOPLE</div>
+  <div class="card-grid">
+    <div class="opt-card selected" onclick="selectPeople(this, '1-2', '1 hour')">
+      <strong>1-2</strong>
+      <span>1 hour</span>
+    </div>
+    <div class="opt-card" onclick="selectPeople(this, '3-4', '1.5 hours')">
+      <strong>3-4</strong>
+      <span>1.5 hours</span>
+    </div>
+    <div class="opt-card" onclick="selectPeople(this, '5-6', '2 hours')">
+      <strong>5-6</strong>
+      <span>2 hours</span>
+    </div>
+    <div class="opt-card" onclick="selectPeople(this, '7-10', '3 hours')">
+      <strong>7-10</strong>
+      <span>3 hours</span>
+    </div>
+  </div>
+
+  <div class="section-label">WHAT WOULD YOU LIKE?</div>
+  <div class="card-grid">
+    <div class="opt-card" onclick="chooseITellChef()">
+      <strong>I'll Tell the Chef</strong>
+      <span>Tell your chef what you want to cook. No ingredient choice is shown here.</span>
+    </div>
+    <div class="opt-card" onclick="chooseFromMenu()">
+      <strong>Choose From Our Menu</strong>
+      <span>Select a breakfast, lunch or dinner option from our menu.</span>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 3: MENU SELECTION -->
+<section id="menuPage" class="page hide flow">
+  <button class="back-btn" onclick="showPage('step2Page')">← Back</button>
+  <h1>Choose From Our Menu</h1>
+  <p class="subtext">Select breakfast, lunch or dinner.</p>
+
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchMealTab('breakfast')">Breakfast</button>
+    <button class="tab-btn" onclick="switchMealTab('lunch')">Lunch</button>
+    <button class="tab-btn" onclick="switchMealTab('dinner')">Dinner</button>
+  </div>
+
+  <div id="breakfastTab" class="menu-grid">
+    <div class="menu-item">
+      <div>
+        <div class="item-title">Poha</div>
+        <div class="item-sub">Home-style preparation</div>
+      </div>
+      <button class="action-btn" onclick="selectMenuItem('Poha')">Select</button>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-title">Aloo Paratha</div>
+        <div class="toggle-group">
+          <button class="tgl-btn active" onclick="toggleButter(this)">Butter</button>
+          <button class="tgl-btn" onclick="toggleButter(this)">No Butter</button>
+        </div>
+      </div>
+      <button class="action-btn" onclick="selectMenuItem('Aloo Paratha')">Select</button>
+    </div>
+  </div>
+
+  <div id="lunchTab" class="menu-grid hide">
+    <div class="menu-item">
+      <div>
+        <div class="item-title">Dal Tadka</div>
+        <div class="item-sub">Home-style preparation</div>
+      </div>
+      <button class="action-btn" onclick="selectMenuItem('Dal Tadka')">Select</button>
+    </div>
+    <div class="menu-item">
+      <div>
+        <div class="item-title">Rajma</div>
+        <div class="item-sub">Home-style preparation</div>
+      </div>
+      <button class="action-btn" onclick="selectMenuItem('Rajma')">Select</button>
+    </div>
+  </div>
+
+  <div id="dinnerTab" class="menu-grid hide">
+    <div class="menu-item">
+      <div>
+        <div class="item-title">Mix Veg</div>
+        <div class="item-sub">Home-style preparation</div>
+      </div>
+      <button class="action-btn" onclick="selectMenuItem('Mix Veg')">Select</button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 4: INGREDIENTS PAGE (MENU ONLY) -->
+<section id="ingredientsPage" class="page hide flow">
+  <button class="back-btn" onclick="showPage('menuPage')">← Back</button>
+  <h1>Select Ingredients Option</h1>
+  <p class="subtext">Choose who brings the raw ingredients.</p>
+
+  <div class="card-grid">
+    <div class="opt-card" onclick="confirmIngredients('Chef Ingredients', 250)">
+      <strong>Chef Ingredients</strong>
+      <span>Chef brings fresh groceries and ingredients required.</span>
+      <span style="color:#075f4e;font-weight:700;margin-top:6px;display:block;">+ ₹250</span>
+    </div>
+    <div class="opt-card" onclick="confirmIngredients('My Ingredients', 0)">
+      <strong>My Ingredients</strong>
+      <span>You provide all raw materials. Chef only cooks.</span>
+      <span style="color:#075f4e;font-weight:700;margin-top:6px;display:block;">+ ₹0</span>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 5: REVIEW & BOOK -->
+<section id="reviewPage" class="page hide flow">
+  <button class="back-btn" onclick="showPage('step2Page')">← Back</button>
+  <h1>Review & Book</h1>
+  <p class="subtext">Check the booking details and choose a payment option.</p>
+
+  <div class="review-grid">
+    <div class="panel-box">
+      <strong id="revChefName" style="font-size:18px;">Chef Raj Sharma</strong>
+      <div class="row-line"><span>Food preference</span><strong id="revFoodPref">Veg</strong></div>
+      <div class="row-line"><span>People</span><strong id="revPeople">1-2</strong></div>
+      <div class="row-line"><span>Chef time</span><strong id="revTime">1 hour</strong></div>
+      <div class="row-line"><span>Meal</span><strong id="revMeal">I'll Tell the Chef</strong></div>
+      <div class="row-line"><span>Ingredients</span><strong id="revIngredients">Not applicable</strong></div>
+      <div class="row-line"><span>Chef distance</span><strong id="revDist">2.1 km</strong></div>
+    </div>
+
+    <div class="panel-box">
+      <div style="font-size:11px;color:#666;">TOTAL</div>
+      <div style="font-size:32px;font-weight:900;" id="revTotal">₹399</div>
+
+      <div class="section-label">PAYMENT OPTIONS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">
+        <button class="tgl-btn active">UPI</button>
+        <button class="tgl-btn">Paytm</button>
+        <button class="tgl-btn">PhonePe</button>
+        <button class="tgl-btn">Cash on Hand</button>
+      </div>
+
+      <button class="bookbtn" style="padding:14px;" onclick="showPage('thankyouPage')">Confirm Booking</button>
+    </div>
+  </div>
+</section>
+
+<!-- PAGE 6: THANK YOU -->
+<section id="thankyouPage" class="page hide flow">
+  <div class="thank-box">
+    <div class="check-icon">✓</div>
+    <h1>Thank you for booking!</h1>
+    <p class="subtext" id="thankSub">Chef Raj Sharma is confirmed for 1-2 people · 1 hour · UPI.</p>
+    <button class="action-btn" style="padding:12px 28px;" onclick="showPage('trackingPage')">Track Chef</button>
+  </div>
+</section>
+
+<!-- PAGE 7: TRACKING MAP -->
+<section id="trackingPage" class="page hide flow">
+  <button class="back-btn" onclick="showPage('homePage')">← Back to Home</button>
+  <h1>Chef is on the way</h1>
+  <p class="subtext">Your chef's route is shown below.</p>
+
+  <div class="panel-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <strong id="trackChefName">Chef Raj Sharma</strong>
+        <div style="font-size:12px;color:#666;">Heading to your location</div>
+      </div>
+      <div style="font-size:22px;font-weight:900;color:#075f4e;">8 min</div>
+    </div>
+    <div class="map-box">
+      <div class="map-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- JAVASCRIPT LOGIC -->
+<script>
+  let bookingData = {
+    chefName: 'Chef Raj Sharma',
+    dist: '2.1 km',
+    pref: 'Veg',
+    people: '1-2',
+    time: '1 hour',
+    meal: "I'll Tell the Chef",
+    ingredients: 'Not applicable',
+    chefCost: 399,
+    ingCost: 0
+  };
+
+  // Hide Intro Overlay after sequence finishes (7.8 seconds total)
+  setTimeout(() => {
+    document.getElementById('intro').style.display = 'none';
+  }, 7800);
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hide'));
+    document.getElementById(id).classList.remove('hide');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function startBooking(name, rating, dist) {
+    bookingData.chefName = name;
+    bookingData.dist = dist;
+    showPage('step2Page');
+  }
+
+  function selectPref(el, val) {
+    el.parentElement.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    bookingData.pref = val;
+  }
+
+  function selectPeople(el, val, time) {
+    el.parentElement.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    bookingData.people = val;
+    bookingData.time = time;
+  }
+
+  function chooseITellChef() {
+    bookingData.meal = "I'll Tell the Chef";
+    bookingData.ingredients = "Not applicable";
+    bookingData.ingCost = 0;
+    openReviewPage();
+  }
+
+  function chooseFromMenu() {
+    showPage('menuPage');
+  }
+
+  function switchMealTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('breakfastTab').classList.add('hide');
+    document.getElementById('lunchTab').classList.add('hide');
+    document.getElementById('dinnerTab').classList.add('hide');
+    document.getElementById(tab + 'Tab').classList.remove('hide');
+  }
+
+  function toggleButter(btn) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.tgl-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function selectMenuItem(itemName) {
+    bookingData.meal = itemName;
+    showPage('ingredientsPage');
+  }
+
+  function confirmIngredients(type, cost) {
+    bookingData.ingredients = type;
+    bookingData.ingCost = cost;
+    openReviewPage();
+  }
+
+  function openReviewPage() {
+    document.getElementById('revChefName').innerText = bookingData.chefName;
+    document.getElementById('revFoodPref').innerText = bookingData.pref;
+    document.getElementById('revPeople').innerText = bookingData.people;
+    document.getElementById('revTime').innerText = bookingData.time;
+    document.getElementById('revMeal').innerText = bookingData.meal;
+    document.getElementById('revIngredients').innerText = bookingData.ingredients;
+    document.getElementById('revDist').innerText = bookingData.dist;
+    document.getElementById('revTotal').innerText = '₹' + (bookingData.chefCost + bookingData.ingCost);
+    
+    document.getElementById('thankSub').innerText = `${bookingData.chefName} is confirmed for ${bookingData.people} people · ${bookingData.time} · UPI.`;
+    document.getElementById('trackChefName').innerText = bookingData.chefName;
+    
+    showPage('reviewPage');
+  }
+</script>
+
+</body>
+</html>
